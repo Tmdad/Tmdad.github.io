@@ -112,17 +112,18 @@
 
 </script>
 
-  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+  <meta name="description" content="PIM路由协议基础：PIM-DM的工作机制： 邻居发现：  pim路由器会像目的地址为224.0.0.13发送hello来建立邻居关系，TTL值为1  ==目的地址224.0.0.13标识区域内的所有pim路由器，为什么采用组播地址，因为不一定是只跟一台路由器建立邻居关系==  pim邻居建立过程中，会通过hello报文协商option参数，pim协议支持各种选项参数。 | 选项id |">
+<meta name="keywords" content="HCIP,组播">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http://yoursite.com/2019/05/09/hello-world/index.html">
+<meta property="og:title" content="PIM-DM路由协议">
+<meta property="og:url" content="http://yoursite.com/2019/05/10/Pim-DM/index.html">
 <meta property="og:site_name" content="TeeMo">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta property="og:description" content="PIM路由协议基础：PIM-DM的工作机制： 邻居发现：  pim路由器会像目的地址为224.0.0.13发送hello来建立邻居关系，TTL值为1  ==目的地址224.0.0.13标识区域内的所有pim路由器，为什么采用组播地址，因为不一定是只跟一台路由器建立邻居关系==  pim邻居建立过程中，会通过hello报文协商option参数，pim协议支持各种选项参数。 | 选项id |">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-10-28T00:39:58.000Z">
+<meta property="og:updated_time" content="2019-05-10T16:55:10.213Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello World">
-<meta name="twitter:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta name="twitter:title" content="PIM-DM路由协议">
+<meta name="twitter:description" content="PIM路由协议基础：PIM-DM的工作机制： 邻居发现：  pim路由器会像目的地址为224.0.0.13发送hello来建立邻居关系，TTL值为1  ==目的地址224.0.0.13标识区域内的所有pim路由器，为什么采用组播地址，因为不一定是只跟一台路由器建立邻居关系==  pim邻居建立过程中，会通过hello报文协商option参数，pim协议支持各种选项参数。 | 选项id |">
 
 
 
@@ -132,7 +133,7 @@
 
   
   
-  <link rel="canonical" href="http://yoursite.com/2019/05/09/hello-world/">
+  <link rel="canonical" href="http://yoursite.com/2019/05/10/Pim-DM/">
 
 
 
@@ -142,7 +143,7 @@
   };
 </script>
 
-  <title>Hello World | TeeMo</title>
+  <title>PIM-DM路由协议 | TeeMo</title>
   
 
 
@@ -347,7 +348,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/09/hello-world/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/10/Pim-DM/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="TeeMo">
@@ -364,7 +365,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Hello World
+          <h1 class="post-title" itemprop="name headline">PIM-DM路由协议
 
               
             
@@ -390,7 +391,7 @@
                 
               
 
-              <time title="创建时间：2019-05-09 16:37:03" itemprop="dateCreated datePublished" datetime="2019-05-09T16:37:03+08:00">2019-05-09</time>
+              <time title="创建时间：2019-05-10 12:12:57" itemprop="dateCreated datePublished" datetime="2019-05-10T12:12:57+08:00">2019-05-10</time>
             
 
             
@@ -407,11 +408,29 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2017-10-28 08:39:58" itemprop="dateModified" datetime="2017-10-28T08:39:58+08:00">2017-10-28</time>
+                <time title="修改时间：2019-05-11 00:55:10" itemprop="dateModified" datetime="2019-05-11T00:55:10+08:00">2019-05-11</time>
               
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/HCIP-R-S-笔记/" itemprop="url" rel="index"><span itemprop="name">HCIP-R&S 笔记</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -435,7 +454,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">426</span>
+                <span title="本文字数">2.3k</span>
               
 
               
@@ -449,7 +468,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">1 分钟</span>
+                <span title="阅读时长">2 分钟</span>
               
             </div>
           
@@ -469,15 +488,121 @@
       
 
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+        <h1 id="PIM路由协议基础："><a href="#PIM路由协议基础：" class="headerlink" title="PIM路由协议基础："></a>PIM路由协议基础：</h1><h3 id="PIM-DM的工作机制："><a href="#PIM-DM的工作机制：" class="headerlink" title="PIM-DM的工作机制："></a>PIM-DM的工作机制：</h3><ul>
+<li><p>邻居发现：</p>
+<ul>
+<li><p>pim路由器会像目的地址为224.0.0.13发送hello来建立邻居关系，TTL值为1</p>
+</li>
+<li><p>==目的地址224.0.0.13标识区域内的所有pim路由器，为什么采用组播地址，因为不一定是只跟一台路由器建立邻居关系==</p>
+</li>
+<li><p>pim邻居建立过程中，会通过hello报文协商option参数，pim协议支持各种选项参数。</p>
+<p>| 选项id |     选项内容      |                     选项作用                     |<br>| :—-: | :—————: | :———————————————-: |<br>|   1    |  hello hold time  | 邻居关系的维持时间，默认为3.5倍的hello时间，105s |<br>|   2    |  Lan prune delay  |       发送prune的最大延时时间，默认为0.5s        |<br>|        | override-interval |    发送否决剪枝jion报文的时间间隔，默认为2.5s    |<br>|   19   |    DR priority    |  DR优先级，先比较优先级再比较接口ip地址，都比大  |<br>|        |   generation ID   |               跟踪邻居路由器的变化               |</p>
+</li>
+<li><p>==hello报文每30s发送一次，死亡时间是hello时间的3.5倍、105s==</p>
+</li>
+</ul>
+</li>
+<li><p>扩散：</p>
+<ul>
+<li>路由器收到组播报文，先进行RPF检查，然后向所有的pim邻居和IGMP接受者进行复制转发。</li>
+<li>接受到组播报文的pim路由器会在本地创建相应的S G表项。</li>
+<li>当扩散到叶子路由器，叶子路由器会判断是否有组播接受者，有的话，会创建相应的sg表项，没有的话，则向上游进行剪枝</li>
+</ul>
+</li>
+<li><p>剪枝：</p>
+<ul>
+<li>在SG表项中，当下游接口列表为空，并有扩散的组播数据时，那么就会像上游的pim邻居组播发送剪枝报文（prune），目的地址为224.0.0.13，让他不要再发送组播报文过来，</li>
+<li>pim邻居收到报文后，会将下游端口删除，并启动剪枝计时器（210s），那么自己的下游接口又为空，那么就又会向上游邻居发送剪枝报文，</li>
+<li>join/prune报文中，P置位为1是剪枝报文，J置位为1是加入报文。</li>
+</ul>
+</li>
+<li><p>剪枝延缓计时器：</p>
+<ul>
+<li>当收到下游发送的剪枝报文后，会根据邻居数量是否大于1来进行相应的处理，</li>
+<li>只有一个邻居，收到剪枝报文后，立即将该接口变为剪枝状态</li>
+<li>有多个邻居，收到剪枝报文后，会启动一个剪枝延时计时器==（3s=0.5+2.5）==，在这个时间内从其中一个邻居收到了一个join报文（2.5s），就会启动剪枝否决机制。</li>
+<li>在下游接口有直连接受者，就不管了pim邻居的数量。</li>
+<li>==pim prune的最大传输时间为0.5。==</li>
+<li>==join报文发送的默认时间间隔为2.5s。==</li>
+</ul>
+</li>
+<li><p>嫁接：</p>
+<ul>
+<li>当有一条新的主机想加入某个组播组，那么就会像上游的pim邻居单播发送graft嫁接报文，</li>
+<li>发送graft报文，并启动嫁接定时器（3s），要求上游路由器主动将被剪除的接口添加到下游接口列表中，并向其转发组播数据</li>
+<li>收到graft报文后，会回复一个graft ack报文来做确认，没收到就每3s重传一次。</li>
+</ul>
+</li>
+<li><p>状态刷新：</p>
+<ul>
+<li><p>离组播源最近的第一条路由器会以每60s周期性发送刷新报文，并进行全网扩散。</p>
+</li>
+<li><p>可以用来刷新剪枝计时器，刷新报文置位为1时进行刷新，每三次报文置位为1，每180s刷新一次。</p>
+</li>
+</ul>
+</li>
+<li><p>断言：</p>
+<ul>
+<li>当从其下游接口发送一份组播数据，又从其下游接口收到该数据时，启动断言机制：</li>
+<li>刚开始设备都认为自己的winner，并发送assert报文，里面携带了到达组播源的协议优先级和开销，通过对比来选出winner，先比较协议优先级，比小优先，相等就比开销，越小越优。再次相等就比较数据的源地址和自己接口的ip地址，比大优先，</li>
+<li>==优胜者为winner，失败者为loser，winner之能有一个，loser可以有多个。==</li>
+<li>成为loser的设备后，会自动剪除自己的下游接口，当下游接口列表为空时，发起剪枝，winner也会收到这个剪枝报文，同时开启断言计时器180s。在超时之前，接口一直处于剪枝状态。</li>
+<li><p>==winner会周期性的向下游接口发送状态刷新报文，用来给loser刷新断言计时器。==</p>
+</li>
+<li><p>winner从下游接口收到剪枝报文，启动剪枝延时计时器，等待join报文的到来。否决剪枝行为。</p>
+</li>
+<li><p>关于断言场景下网络拓扑变化时，组播路径的切换：</p>
+<ul>
+<li>winner的上游接口中断：会从下游接口发送最差的assert报文来通知其他的loser。</li>
+<li>最差的assert报文：协议优先级无限大，开销无限大。</li>
+<li>winner的下游接口中断：此时无法从下游接口发送assert cancel报文，那么loser路由器只有等待与winner邻居失效后（默认105s），才会知道winner挂掉。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="PIM-DM-报文："><a href="#PIM-DM-报文：" class="headerlink" title="PIM DM 报文："></a>PIM DM 报文：</h3><hr>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">报文类型</th>
+<th style="text-align:center">类型ID</th>
+<th style="text-align:center">报文作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">hello</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">发现，协商参数。维护邻居关系</td>
+</tr>
+<tr>
+<td style="text-align:center">jion/prune</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">加入/剪枝，J置位为1，表明为jion报文，p置位为1，表明为prune报文</td>
+</tr>
+<tr>
+<td style="text-align:center">assert</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">断言</td>
+</tr>
+<tr>
+<td style="text-align:center">graft</td>
+<td style="text-align:center">6</td>
+<td style="text-align:center">剪枝</td>
+</tr>
+<tr>
+<td style="text-align:center">graft ack</td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">剪枝确认</td>
+</tr>
+<tr>
+<td style="text-align:center">state-refresh</td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">状态刷新</td>
+</tr>
+</tbody>
+</table>
 
       
     </div>
@@ -499,6 +624,14 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/HCIP/" rel="tag"><i class="fa fa-tag"></i> HCIP</a>
+          
+            <a href="/tags/组播/" rel="tag"><i class="fa fa-tag"></i> 组播</a>
+          
+        </div>
+      
 
       
       
@@ -508,14 +641,18 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2019/05/10/Pim-SM/" rel="next" title="PIM-SM路由协议基础">
+                <i class="fa fa-chevron-left"></i> PIM-SM路由协议基础
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/05/10/Pim-SM/" rel="prev" title="PIM-SM路由协议基础">
-                PIM-SM路由协议基础 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/05/10/OSPF链路状态信息/" rel="prev" title="OSPF链路状态信息">
+                OSPF链路状态信息 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -704,7 +841,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Quick-Start"><span class="nav-number">1.</span> <span class="nav-text">Quick Start</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-a-new-post"><span class="nav-number">1.1.</span> <span class="nav-text">Create a new post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Run-server"><span class="nav-number">1.2.</span> <span class="nav-text">Run server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generate-static-files"><span class="nav-number">1.3.</span> <span class="nav-text">Generate static files</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deploy-to-remote-sites"><span class="nav-number">1.4.</span> <span class="nav-text">Deploy to remote sites</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PIM路由协议基础："><span class="nav-number">1.</span> <span class="nav-text">PIM路由协议基础：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PIM-DM的工作机制："><span class="nav-number">1.0.1.</span> <span class="nav-text">PIM-DM的工作机制：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PIM-DM-报文："><span class="nav-number">1.0.2.</span> <span class="nav-text">PIM DM 报文：</span></a></li></ol></li></ol></div>
             
 
           </div>

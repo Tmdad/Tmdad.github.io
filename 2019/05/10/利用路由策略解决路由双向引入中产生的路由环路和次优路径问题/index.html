@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: true,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+<script>
+    
+    window.onload = function(){
+        var path = 'https://malizhi.cn'; //这里要改成你博客的地址
+        var localhostItem = String(window.location).split(path)[1];
+        var LiNode = document.querySelectorAll('#menu > li > a')
+        
+        for(var i = 0; i< LiNode.length;i++){
+            var item = String(LiNode[i].href).split(path)[1];
+            if(item == localhostItem && item != undefined){
+                LiNode[i].setAttribute('style','border-bottom:1px solid black');
+            }
+        }
+    };
+
+</script>
+
+  <meta name="description" content="双点双向引入带来的次优路劲和环路问题：实验拓扑： 拓扑描述： R1,R2之间运行静态，R2,R3,R4运行OSPF，R3,R4,R5运行RIP  实验需求： 在R2上利用前缀列表精确匹配环回口路由并引入至RIP 将R2上利用filter-policy将环回口引入至OSPF时，只允许OSPF域内学到双数路由 在R3,R4上进行双向路由重分发 在R3,R4上对10.0.X.0/24进行自动汇总，请请避">
+<meta name="keywords" content="HCIP,双点双向">
+<meta property="og:type" content="article">
+<meta property="og:title" content="双点双向引入带来的次优路径和环路问题：">
+<meta property="og:url" content="http://yoursite.com/2019/05/10/利用路由策略解决路由双向引入中产生的路由环路和次优路径问题/index.html">
+<meta property="og:site_name" content="TeeMo">
+<meta property="og:description" content="双点双向引入带来的次优路劲和环路问题：实验拓扑： 拓扑描述： R1,R2之间运行静态，R2,R3,R4运行OSPF，R3,R4,R5运行RIP  实验需求： 在R2上利用前缀列表精确匹配环回口路由并引入至RIP 将R2上利用filter-policy将环回口引入至OSPF时，只允许OSPF域内学到双数路由 在R3,R4上进行双向路由重分发 在R3,R4上对10.0.X.0/24进行自动汇总，请请避">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190403220824877.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzk0MTE4Mg==,size_16,color_FFFFFF,t_70">
+<meta property="og:updated_time" content="2019-05-10T16:42:57.427Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="双点双向引入带来的次优路径和环路问题：">
+<meta name="twitter:description" content="双点双向引入带来的次优路劲和环路问题：实验拓扑： 拓扑描述： R1,R2之间运行静态，R2,R3,R4运行OSPF，R3,R4,R5运行RIP  实验需求： 在R2上利用前缀列表精确匹配环回口路由并引入至RIP 将R2上利用filter-policy将环回口引入至OSPF时，只允许OSPF域内学到双数路由 在R3,R4上进行双向路由重分发 在R3,R4上对10.0.X.0/24进行自动汇总，请请避">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190403220824877.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzk0MTE4Mg==,size_16,color_FFFFFF,t_70">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="TeeMo" type="application/atom+xml">
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2019/05/10/利用路由策略解决路由双向引入中产生的路由环路和次优路径问题/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>双点双向引入带来的次优路径和环路问题： | TeeMo</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+  
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TeeMo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+      <a>
+        <img class="custom-logo-image" src="https://p.ssl.qhimg.com/t01d97b756aa90d3fe0.jpg" alt="TeeMo">
+      </a>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-主页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>主页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/10/利用路由策略解决路由双向引入中产生的路由环路和次优路径问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TeeMo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/123.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TeeMo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">双点双向引入带来的次优路径和环路问题：
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-10 12:12:57" itemprop="dateCreated datePublished" datetime="2019-05-10T12:12:57+08:00">2019-05-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-05-11 00:42:57" itemprop="dateModified" datetime="2019-05-11T00:42:57+08:00">2019-05-11</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/HCIP-R-S-实验/" itemprop="url" rel="index"><span itemprop="name">HCIP-R&S 实验</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">13k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">12 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="双点双向引入带来的次优路劲和环路问题："><a href="#双点双向引入带来的次优路劲和环路问题：" class="headerlink" title="双点双向引入带来的次优路劲和环路问题："></a>双点双向引入带来的次优路劲和环路问题：</h1><h3 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h3><p><img src="https://img-blog.csdnimg.cn/20190403220824877.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzk0MTE4Mg==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="拓扑描述："><a href="#拓扑描述：" class="headerlink" title="拓扑描述："></a>拓扑描述：</h3><ul>
+<li>R1,R2之间运行静态，R2,R3,R4运行OSPF，R3,R4,R5运行RIP</li>
+</ul>
+<h3 id="实验需求："><a href="#实验需求：" class="headerlink" title="实验需求："></a>实验需求：</h3><ol>
+<li>在R2上利用前缀列表精确匹配环回口路由并引入至RIP</li>
+<li>将R2上利用filter-policy将环回口引入至OSPF时，只允许OSPF域内学到双数路由</li>
+<li>在R3,R4上进行双向路由重分发</li>
+<li>在R3,R4上对10.0.X.0/24进行自动汇总，请请避免环路</li>
+</ol>
+<h3 id="实验步骤："><a href="#实验步骤：" class="headerlink" title="实验步骤："></a>实验步骤：</h3><ul>
+<li><p>配置IP地址，ping直连检验连通性（略）</p>
+</li>
+<li><p>配置OSPF(取R2配置)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[R2]ospf 1 router-id 2.2.2.2</span><br><span class="line">[R2-ospf-1]area 0</span><br><span class="line">[R2-ospf-1-area-0.0.0.0]network 2.2.2.2 0.0.0.0 </span><br><span class="line">[R2-ospf-1-area-0.0.0.0]network 10.0.23.2 0.0.0.0 </span><br><span class="line">[R2-ospf-1-area-0.0.0.0]network 10.0.24.2 0.0.0.0</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看R2的ospf邻居表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[R2]dis ospf peer brief </span><br><span class="line"></span><br><span class="line">	 OSPF Process 1 with Router ID 2.2.2.2</span><br><span class="line">		  Peer Statistic Information</span><br><span class="line"> ----------------------------------------------------------------------------</span><br><span class="line"> Area Id          Interface                        Neighbor id      State    </span><br><span class="line"> 0.0.0.0          GigabitEthernet0/0/1             10.0.23.3        Full        </span><br><span class="line"> 0.0.0.0          GigabitEthernet0/0/2             4.4.4.4          Full        </span><br><span class="line"> ----------------------------------------------------------------------------</span><br><span class="line">[R2]</span><br><span class="line"></span><br><span class="line">#状态为full，邻接关系建立成功</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置RIP（取R5配置）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[R5]rip 1	</span><br><span class="line">[R5-rip-1]undo summary </span><br><span class="line">[R5-rip-1]version 2</span><br><span class="line">[R5-rip-1]network 10.0.0.0</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看R5的RIP邻居表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[R5]dis rip 1 neighbor </span><br><span class="line">---------------------------------------------------------------------</span><br><span class="line"> IP Address      Interface                   Type   Last-Heard-Time</span><br><span class="line">---------------------------------------------------------------------</span><br><span class="line"> 10.0.35.3       GigabitEthernet0/0/0        RIP    0:0:20</span><br><span class="line"> Number of RIP routes  : 1</span><br><span class="line"> 10.0.45.4       GigabitEthernet0/0/1        RIP    0:0:21</span><br><span class="line"> Number of RIP routes  : 1</span><br><span class="line">[R5]</span><br><span class="line"></span><br><span class="line">#rip邻居建立成功。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在R5上配置前缀列表精确引入外部路由：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[R5]ip ip-prefix 1 index 10 permit 20.0.0.0 22 greater-equal 22 less-equal 24</span><br><span class="line"> --匹配前缀为20.0.0.0/22 中掩码为22-24中的四个网段</span><br><span class="line"> </span><br><span class="line">#我们这一下子匹配了四个，跟题目要求的不符合，往下看</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在在R5上配置两个环回口地址为20.0.3.1，20.0.4.1后，查看R4 RIP路由表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[R4]dis ip routing-table protocol rip </span><br><span class="line">Route Flags: R - relay, D - download to fib</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line">Public routing table : RIP</span><br><span class="line">         Destinations : 6        Routes : 6        </span><br><span class="line"></span><br><span class="line">RIP routing table status : &lt;Active&gt;</span><br><span class="line">         Destinations : 5        Routes : 5</span><br><span class="line"></span><br><span class="line">Destination/Mask    Proto   Pre  Cost      Flags NextHop         Interface</span><br><span class="line"></span><br><span class="line">      10.0.35.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.0.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.1.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.2.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.3.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line"></span><br><span class="line">#发现新加的路由只有20.0.3.0被学习了，20.0.4.0没有被学习，起到一个过滤的作用</span><br><span class="line">#但是依旧会学到一条，那这不是就没有进行精确引入了吗？</span><br><span class="line">#可以在添加一条规则直接拒绝掉。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在R5的前缀列表上新加入一条匹配规则：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[R5]ip ip-prefix 1 index 5 deny 20.0.3.0 24 </span><br><span class="line"></span><br><span class="line"># 这条规则跟acl的匹配差不多，但是要注意index的值，让它优先进行匹配才能过滤。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再次查看R4 RIP路由表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[R4]dis ip rou protocol rip </span><br><span class="line">Route Flags: R - relay, D - download to fib</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line">Public routing table : RIP</span><br><span class="line">         Destinations : 5        Routes : 5        </span><br><span class="line"></span><br><span class="line">RIP routing table status : &lt;Active&gt;</span><br><span class="line">         Destinations : 4        Routes : 4</span><br><span class="line"></span><br><span class="line">Destination/Mask    Proto   Pre  Cost      Flags NextHop         Interface</span><br><span class="line"></span><br><span class="line">      10.0.35.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.0.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.1.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.2.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line"></span><br><span class="line">#精确引入要求达成</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在R1配置默认路由指向R2,在R2上配置静态并引入至OSPF域内：(略)</p>
+</li>
+</ul>
+<ul>
+<li><p>在R2上配置路由策略，只允许OSPF域内学到双数路由：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[R2]acl 2000</span><br><span class="line">[R2-acl-basic-2000]rule 5 permit source 172.16.0.0 0.0.2.0 --配置ACL匹配172.16.0.0里面的双数网段</span><br><span class="line">[R2-ospf-1]filter-policy 2000 export static 按照过滤策略对引入静态路由在发布时进行过滤</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在R4上查看OSPF路由表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">[R4]dis ip rou pr osfp </span><br><span class="line">                  ^</span><br><span class="line">Error: Unrecognized command found at &apos;^&apos; position.</span><br><span class="line">[R4]dis ip rou pr ospf </span><br><span class="line">Route Flags: R - relay, D - download to fib</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line">Public routing table : OSPF</span><br><span class="line">         Destinations : 5        Routes : 5        </span><br><span class="line"></span><br><span class="line">OSPF routing table status : &lt;Active&gt;</span><br><span class="line">         Destinations : 5        Routes : 5</span><br><span class="line"></span><br><span class="line">Destination/Mask    Proto   Pre  Cost      Flags NextHop         Interface</span><br><span class="line"></span><br><span class="line">        2.2.2.2/32  OSPF    10   1           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">        3.3.3.3/32  OSPF    10   2           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">      10.0.23.0/24  OSPF    10   2           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">     172.16.0.0/24  O_ASE   150  1           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">     172.16.2.0/24  O_ASE   150  1           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line"></span><br><span class="line">OSPF routing table status : &lt;Inactive&gt;</span><br><span class="line">         Destinations : 0        Routes : 0</span><br><span class="line"></span><br><span class="line">#发现只有两条双数路由的存在，要求达成</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在R3，R4上进行双向引入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[R3-ospf-1]import-route rip </span><br><span class="line">[R3-rip-1]import-route ospf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[R4-ospf-1]import-route rip 	</span><br><span class="line">[R4-rip-1]import-route ospf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在R3上 tracert 172.16.0.0/172.16.2.0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">[R3]tracert 172.16.0.1</span><br><span class="line"></span><br><span class="line"> traceroute to  172.16.0.1(172.16.0.1), max hops: 30 ,packet length: 40,press CT</span><br><span class="line">RL_C to break </span><br><span class="line"></span><br><span class="line"> 1 10.0.35.5 40 ms  20 ms  20 ms </span><br><span class="line"></span><br><span class="line"> 2 10.0.45.4 20 ms  20 ms  20 ms </span><br><span class="line"></span><br><span class="line"> 3 10.0.24.2 30 ms  20 ms  20 ms </span><br><span class="line"></span><br><span class="line"> 4 10.0.12.1 40 ms  40 ms  40 ms </span><br><span class="line">[R3]</span><br><span class="line"></span><br><span class="line">&lt;R3&gt;tracert 172.16.2.1</span><br><span class="line"></span><br><span class="line"> traceroute to  172.16.2.1(172.16.2.1), max hops: 30 ,packet length: 40,press CT</span><br><span class="line">RL_C to break </span><br><span class="line"></span><br><span class="line"> 1 10.0.35.5 10 ms  10 ms  10 ms </span><br><span class="line"></span><br><span class="line"> 2 10.0.45.4 20 ms  20 ms  20 ms </span><br><span class="line"></span><br><span class="line"> 3 10.0.24.2 40 ms  30 ms  30 ms </span><br><span class="line"></span><br><span class="line"> 4 10.0.12.1 40 ms  30 ms  40 ms </span><br><span class="line">&lt;R3&gt;</span><br><span class="line"></span><br><span class="line">#发现通往次网段的路径都是R5-R4-R2-R1,而这个路径不是最优的，所以当我们进行双向引入的时候，造成了次优路径的产生，</span><br><span class="line">#因为OSPF外部路由优先级为150，在R4上将OSPF重发布进RIP后，R5会学到此路由，并且会发给R3,此时R3上就会存在两条路由，因为rip优先级为100，比外部路由的小，所以优先选择RIP的，因此造成次优路劲。</span><br><span class="line">#关于次优路径，有两种解决办法：</span><br><span class="line">#结局方案一：首先是在R2上将外部路由的优先级直接改为比100小，</span><br><span class="line">#解决方案二：还有就是将OSPF路由引入RIP后，将优先级改的比150大</span><br><span class="line">#两种办法我们都尝试一下</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>解决方案1：在R4上修改外部网络的优先级为99：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[R4]acl 2000</span><br><span class="line">[R4-acl-basic-2000]rule 5 permit source 172.16.0.0 0.0.2.0 </span><br><span class="line">[R4]route-policy ase permit node 10  --配置route-policy的名字和进程</span><br><span class="line">[R4-route-policy]if-match acl 2000  --匹配acl 2000</span><br><span class="line">[R4-route-policy]apply preference 99 --定义动作为优先级99.</span><br><span class="line">[R4-ospf-1]preference ase route-policy ase --配置路由策略为特定的路由设定优先级</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看R4的路由表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">[R4]dis ip routing-table protocol ospf </span><br><span class="line">Route Flags: R - relay, D - download to fib</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line">Public routing table : OSPF</span><br><span class="line">         Destinations : 5        Routes : 5        </span><br><span class="line"></span><br><span class="line">OSPF routing table status : &lt;Active&gt;</span><br><span class="line">         Destinations : 5        Routes : 5</span><br><span class="line"></span><br><span class="line">Destination/Mask    Proto   Pre  Cost      Flags NextHop         Interface</span><br><span class="line"></span><br><span class="line">        2.2.2.2/32  OSPF    10   1           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">        3.3.3.3/32  OSPF    10   2           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">      10.0.23.0/24  OSPF    10   2           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">     172.16.0.0/24  O_ASE   99   1           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">     172.16.2.0/24  O_ASE   99   1           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line"></span><br><span class="line">OSPF routing table status : &lt;Inactive&gt;</span><br><span class="line">         Destinations : 0        Routes : 0</span><br><span class="line"></span><br><span class="line">[R4]</span><br><span class="line"></span><br><span class="line">#发现外部路由优先级为99，而rip的优先级为100，所以就不会从RIP中不会学到该路由。R4上的次优路径解除。</span><br><span class="line">#R3配置和R4同理</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>解决方案2：在R2上面配置路由策略，将引入的外部路由打上tag 500的标签：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[R2]route-policy tag permit node 10</span><br><span class="line">[R2-route-policy] apply tag 500  --打上tag500</span><br><span class="line">[R2-ospf-1]import-route static route-policy tag  --引入路由的时候调用路由策略</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在R4上配置路由策略对tag路由进行匹配，并在rip里面加上优先级。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[R4]route-policy 1 permit node 10</span><br><span class="line">[R4-route-policy]if-match tag 500  --匹配tag500的路由</span><br><span class="line">[R4-route-policy]apply preference 200  --定义动作，加上优先级为200</span><br><span class="line">[R4-rip-1]preference route-policy 1  --指定路由策略，对满足条件的特定路由设置优先级。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看R4的路由表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">[R4]dis ip routing-table </span><br><span class="line">Route Flags: R - relay, D - download to fib</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line">Routing Tables: Public</span><br><span class="line">         Destinations : 20       Routes : 20       </span><br><span class="line"></span><br><span class="line">Destination/Mask    Proto   Pre  Cost      Flags NextHop         Interface</span><br><span class="line"></span><br><span class="line">        2.2.2.2/32  OSPF    10   1           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">        3.3.3.3/32  OSPF    10   2           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">        4.4.4.4/32  Direct  0    0           D   127.0.0.1       LoopBack0</span><br><span class="line">      10.0.23.0/24  OSPF    10   2           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">      10.0.24.0/24  Direct  0    0           D   10.0.24.4       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">      10.0.24.4/32  Direct  0    0           D   127.0.0.1       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">    10.0.24.255/32  Direct  0    0           D   127.0.0.1       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">      10.0.35.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">      10.0.45.0/24  Direct  0    0           D   10.0.45.4       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">      10.0.45.4/32  Direct  0    0           D   127.0.0.1       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">    10.0.45.255/32  Direct  0    0           D   127.0.0.1       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.0.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.1.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.2.0/24  RIP     100  1           D   10.0.45.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">      127.0.0.0/8   Direct  0    0           D   127.0.0.1       InLoopBack0</span><br><span class="line">      127.0.0.1/32  Direct  0    0           D   127.0.0.1       InLoopBack0</span><br><span class="line">127.255.255.255/32  Direct  0    0           D   127.0.0.1       InLoopBack0</span><br><span class="line">     172.16.0.0/24  O_ASE   150  1           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">     172.16.2.0/24  O_ASE   150  1           D   10.0.24.2       GigabitEthernet</span><br><span class="line">0/0/0</span><br><span class="line">255.255.255.255/32  Direct  0    0           D   127.0.0.1       InLoopBack0</span><br><span class="line"></span><br><span class="line">[R4] </span><br><span class="line"></span><br><span class="line">#发现在R4上访问外部路由的下一跳为R2,这时次优路径的问题就被解决了</span><br><span class="line">#因为172.16.0.0/172.16.2.0,在RIP内的优先级为200，所以优先选择OSPF区域内的，所以不存在次优问题了</span><br><span class="line">#R3配置和R4同理</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>次优路径解决，但是因为是在R3,R4上做的双点双向路由重分发，所以在R3上rip从ospf学到的路由，可能会经过R4继续传给OSPF,这样会造成路由回灌，会产生环路。我们可以在R3上引入路由的时候打上一个tag标签，让路由带标签进行传递，然后在R4上拒绝该tag路由的传递，这样就避免了路由回灌。</p>
+</li>
+<li><p>在R3上配置单点双向的标签标记。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[R3]route-policy o2r permit node 10  </span><br><span class="line">[R3-route-policy]apply tag 100  --打上tag100</span><br><span class="line">[R3-rip-1]import-route ospf 1 route-policy o2r --引入的OSPF路由全都打上了tag100的标签。</span><br><span class="line"></span><br><span class="line">[R4]route-policy r2o deny node 10 </span><br><span class="line">[R4-route-policy]if-match tag 100  --匹配tag100</span><br><span class="line">[R4-ospf-1]import-route rip route-policy r2o --引入rip路由是拒绝tag100的路由</span><br><span class="line"></span><br><span class="line">[R3]route-policy r2o permit node 10  </span><br><span class="line">[R3-route-policy]apply tag 200</span><br><span class="line">[R3-ospf-1]import-route rip route-policy r2o </span><br><span class="line"></span><br><span class="line">[R4]route-policy o2r deny node 10	</span><br><span class="line">[R4-route-policy]if-match tag 200</span><br><span class="line">[R4-rip-1]import-route ospf 1 route-policy o2r </span><br><span class="line"></span><br><span class="line">#o2r --OSPF引入RIP</span><br><span class="line">#r2o --rip引入OSPF.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在R4上配置单点双向的标签标记。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[R4]route-policy o2r permit node 20</span><br><span class="line">[R4-route-policy]apply tag 300 </span><br><span class="line"></span><br><span class="line">[R3]route-policy r2o deny node 20	</span><br><span class="line">[R3-route-policy]if-match tag 300</span><br><span class="line"></span><br><span class="line">[R4]route-policy r2o permit node 20	</span><br><span class="line">[R4-route-policy]apply tag 400</span><br><span class="line"></span><br><span class="line">[R3]route-policy r2o deny node 20</span><br><span class="line">[R3-route-policy]if-match tag 400</span><br><span class="line"></span><br><span class="line">#因为刚才已经在引入时进行调用了，现在就不必调用了。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置路由汇总：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[R3-ospf-1]asbr-summary 20.0.0.0 255.255.0.0</span><br><span class="line"></span><br><span class="line">[R4-ospf-1]asbr-summary 20.0.0.0 255.255.0.0</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看R3的rip路由表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">[R3]dis ip routing-table protocol rip </span><br><span class="line">Route Flags: R - relay, D - download to fib</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line">Public routing table : RIP</span><br><span class="line">         Destinations : 6        Routes : 6        </span><br><span class="line"></span><br><span class="line">RIP routing table status : &lt;Active&gt;</span><br><span class="line">         Destinations : 6        Routes : 6</span><br><span class="line"></span><br><span class="line">Destination/Mask    Proto   Pre  Cost      Flags NextHop         Interface</span><br><span class="line"></span><br><span class="line">        4.4.4.4/32  RIP     100  2           D   10.0.35.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">      10.0.24.0/24  RIP     100  2           D   10.0.35.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">      10.0.45.0/24  RIP     100  1           D   10.0.35.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.0.0/24  RIP     100  1           D   10.0.35.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.1.0/24  RIP     100  1           D   10.0.35.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line">       20.0.2.0/24  RIP     100  1           D   10.0.35.5       GigabitEthernet</span><br><span class="line">0/0/1</span><br><span class="line"></span><br><span class="line">RIP routing table status : &lt;Inactive&gt;</span><br><span class="line">         Destinations : 0        Routes : 0</span><br><span class="line"></span><br><span class="line">[R3]</span><br><span class="line"></span><br><span class="line">#发现有一条聚合路由20.0.0.0的存在，在R4的路由表中也会存在该路由</span><br><span class="line">#那么当访问一条不存在的20.0.x.x的路由时，在R3和R4之间就会产生环路。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在R4上tracert 20.0.5.1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[R4]tracert 20.0.5.1</span><br><span class="line"></span><br><span class="line"> traceroute to  20.0.5.1(20.0.5.1), max hops: 30 ,packet length: 40,press CTRL_C</span><br><span class="line"> to break </span><br><span class="line"></span><br><span class="line"> 1 10.0.45.5 20 ms  20 ms  20 ms </span><br><span class="line"></span><br><span class="line"> 2 10.0.35.3 20 ms  20 ms  20 ms </span><br><span class="line"></span><br><span class="line"> 3 10.0.23.2 20 ms  20 ms  30 ms </span><br><span class="line"></span><br><span class="line"> 4 10.0.23.3 30 ms 10.0.24.4 20 ms 10.0.23.3 30 ms </span><br><span class="line"></span><br><span class="line"> 5 10.0.45.5 30 ms 10.0.23.2 30 ms 10.0.45.5 30 ms</span><br><span class="line"> </span><br><span class="line"> #当我们试图访问压根就不存在的路由时，会造成环路。</span><br><span class="line"> #可以通过在R3,R4配置acl，拒绝聚合路由的进入就可以了，因为在R3或者R4上访问该路由时，会以聚合路由的路由条目进行查表转发</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在R3配置acl拒绝聚合路由传递。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[R3]acl 2000</span><br><span class="line">[R3-acl-basic-2000]rule 5 deny source 20.0.0.0 0.0.255.255</span><br><span class="line">[R4-acl-basic-2000]rule 10 permit source any  --acl在进行路由过滤的话默认是拒绝所有的。</span><br><span class="line">[R3-acl-basic-2000]quit </span><br><span class="line"></span><br><span class="line">[R3-ospf-1]filter-policy 2000 import  --</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再次在R4 tracert 20.0.5.1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">R4]tracert 20.0.5.1</span><br><span class="line"></span><br><span class="line"> traceroute to  20.0.5.1(20.0.5.1), max hops: 30 ,packet length: 40,press CTRL_C</span><br><span class="line"> to break </span><br><span class="line"></span><br><span class="line"> 1  *  *  * </span><br><span class="line"></span><br><span class="line"> 2  *  *  * </span><br><span class="line"></span><br><span class="line"> 3  *  *  *</span><br><span class="line"> </span><br><span class="line"> #已经访问不了，达成实验要求.</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="实验结果："><a href="#实验结果：" class="headerlink" title="实验结果："></a>实验结果：</h3><ul>
+<li><p>在R5上访问R1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[R5]ping 172.16.0.1</span><br><span class="line">  PING 172.16.0.1: 56  data bytes, press CTRL_C to break</span><br><span class="line">    Request time out</span><br><span class="line">    Reply from 172.16.0.1: bytes=56 Sequence=2 ttl=253 time=50 ms</span><br><span class="line">    Reply from 172.16.0.1: bytes=56 Sequence=3 ttl=253 time=30 ms</span><br><span class="line">    Reply from 172.16.0.1: bytes=56 Sequence=4 ttl=253 time=30 ms</span><br><span class="line">    Reply from 172.16.0.1: bytes=56 Sequence=5 ttl=253 time=20 ms</span><br><span class="line"></span><br><span class="line">  --- 172.16.0.1 ping statistics ---</span><br><span class="line">    5 packet(s) transmitted</span><br><span class="line">    4 packet(s) received</span><br><span class="line">    20.00% packet loss</span><br><span class="line">    round-trip min/avg/max = 20/32/50 ms</span><br><span class="line"></span><br><span class="line">[R5]</span><br><span class="line"></span><br><span class="line">#实验成功</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><blockquote>
+<p>本次实验主要考察对路由策略知识点，还有双点双向重分发遇到的问题，着重理解次优路径的产生，以及怎么解决次优路径，还有就是对于路由回灌的问题，不要对两边路由引入的方向绕晕。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/HCIP/" rel="tag"><i class="fa fa-tag"></i> HCIP</a>
+          
+            <a href="/tags/双点双向/" rel="tag"><i class="fa fa-tag"></i> 双点双向</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/10/OSPF链路状态信息/" rel="next" title="OSPF链路状态信息">
+                <i class="fa fa-chevron-left"></i> OSPF链路状态信息
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/10/HCIP综合实验/" rel="prev" title="HCIP综合实验">
+                HCIP综合实验 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/123.jpg" alt="TeeMo">
+            
+              <p class="site-author-name" itemprop="name">TeeMo</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://blog.csdn.net/weixin_43941182" title="CSDN &rarr; https://blog.csdn.net/weixin_43941182" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/Tmdad" title="GitHub &rarr; https://github.com/Tmdad" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#双点双向引入带来的次优路劲和环路问题："><span class="nav-number">1.</span> <span class="nav-text">双点双向引入带来的次优路劲和环路问题：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实验拓扑："><span class="nav-number">1.0.1.</span> <span class="nav-text">实验拓扑：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拓扑描述："><span class="nav-number">1.0.2.</span> <span class="nav-text">拓扑描述：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验需求："><span class="nav-number">1.0.3.</span> <span class="nav-text">实验需求：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验步骤："><span class="nav-number">1.0.4.</span> <span class="nav-text">实验步骤：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验结果："><span class="nav-number">1.0.5.</span> <span class="nav-text">实验结果：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">1.0.6.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TeeMo</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">48k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">44 分钟</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+<!-- 新增访客统计代码 -->
+
+<div>
+      <span class="post-count">HCIE之路上的一枚沙雕</span>
+    
+</div>
+<!-- 新增访客统计代码 END-->
+
+<!-- 在网页底部添加网站运行时间 -->
+<span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("07/21/2018 00:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "Run for "+dnum+" Days ";
+        document.getElementById("times").innerHTML = hnum + " Hours " + mnum + " m " + snum + " s";
+    }
+setInterval("createtime()",250);
+</script>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <!-- 页面点击小红心 --> <script type="text/javascript" src="/js/love.js"></script>
+  
+  
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+
